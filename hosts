@@ -10,3 +10,6 @@ intranet1
 db1
 db2
 db3
+[smtprelays]
+smtp1
+smtp2

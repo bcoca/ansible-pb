@@ -1,4 +1,4 @@
-#/usr/bin/env ansible-playbook -K -e "target=all"
+#/usr/bin/env ansible-playbook -K -e "target=all" --limit="!smtprelays"
 - hosts: $target
   sudo: True
   gather_facts: True
