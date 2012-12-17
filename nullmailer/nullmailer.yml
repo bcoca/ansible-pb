@@ -1,5 +1,3 @@
----
-
 - hosts: $target
   sudo: True
   gather_facts: True
@@ -29,7 +27,7 @@
       only_if: $is_fbsd
 
     - name: publish configs
-      action: template src=templates/nullmailer/$item.j2 dest=$nullmailer_conf_dir/$item[:-3]
+      action: template src=templates/nullmailer/$item dest=$nullmailer_conf_dir/$item[:-3]
       with_fileglob: templates/*.j2
       notify:
         - restart nullmailer
