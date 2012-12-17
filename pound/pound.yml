@@ -1,0 +1,20 @@
+#/usr/bin/env ansible-playbook -K -e "target=lbs" 
+- hosts: lbs
+  sudo: True
+  gather_facts: True
+  vars_files:
+    - "../vars/defaults.yml"
+    - "../vars/${ansible_system}.yml"
+
+  tasks:
+    - name: install deb
+      action: apt pkg=pound ensure=installed
+
+    - name: publish configs
+      action: template src=templates/pound.cfg.j2 dest=$pkg_conf_dir/pound/pound.cfg
+      notify:
+        - restart pound
+
+  handlers:
+    - name: restart pound
+      service: name=pound state=restarted

@@ -1,0 +1,53 @@
+User "{{pound.user}}"
+Group "{{pound.group}}"
+Control "{{pound.socket}}"
+LogFacility local1
+LogLevel 3
+
+DynScale 1
+
+# how often Pound will check for back-end hosts (sec)
+Alive 5
+
+#################################################
+# ALL HTTP/HTTPS LISTENERS (pound frontend)
+
+{% for virtual in pound.frontends %}
+### {{ virtual.name }}
+ListenHTTP
+    Address {{ virtual.ip }}
+    Port 80
+End
+{%  if host.cert != None %}
+ListenHTTPS
+    AddHeader "X-HTTPS: 1"
+    Address {{virtual.ip}}
+    Port 443
+    RewriteLocation 0
+    Cert "{{sslcerts}}/{{virtual.cert}}"
+    Ciphers "-ALL:!SSLv1:!SSLv2:!CAMELLIA:!kEDH:TLSv1+HIGH:SSLv3+HIGH:!aNULL"
+End
+{%  endif %}
+{% endfor %}
+
+#################################################
+# BACKENDS (pound backend)
+
+{% for service in pound.backends %}
+Service "{{service.name}}"
+    HeadRequire "Host:.*{{ service.name }}\..*"
+{% for host in service.hosts %}
+    BackEnd
+        Address {{ host.ip }}
+        Port 80
+    End
+{% endfor %}
+    Session
+        Type Cookie
+    END
+    Emergency
+        Address localhost
+        Port {{ports.emergency_page}}
+    End
+End
+{% endfor %}
