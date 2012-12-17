@@ -8,7 +8,10 @@
     mytld: example.com
     is_yum: $ansible_pkg_mgr == 'yum'
     is_apt: $ansible_pkg_mgr == 'apt'
-    is_fbsd: $ansible_distribution == 'FreeBSD'
+    is_fbsd: $ansible_system == 'FreeBSD'
+  vars_files:
+    - "../vars/defaults.yml"
+    - "../vars/${ansible_system}.yml"
 
   tasks:
     - name: install rpm
@@ -28,7 +31,7 @@
       only_if: $is_fbsd
 
     - name: publish configs
-      action: template src=templates/nullmailer/$item dest=$nullmailer_conf_dir/$item[:-3]
+      action: template src=templates/nullmailer/$item dest=$pkg_conf_dir/$item[:-3]
       with_fileglob: templates/*.j2
       notify:
         - restart nullmailer
