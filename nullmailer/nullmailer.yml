@@ -1,3 +1,4 @@
+#/usr/bin/env ansible-playbook -K -e "target=all"
 - hosts: $target
   sudo: True
   gather_facts: True
