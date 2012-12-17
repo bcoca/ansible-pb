@@ -1,1 +1,29 @@
-pkg_conf_dir=/etc
+pkg_conf_dir: /etc
+ports:
+    emergency_page: 8080
+    internal_web: 8181
+pound:
+    frontends:
+        - name: example.com
+          ip: 192.168.1.100
+          cert: example.com.pem
+        - name: example2.com
+          ip: 192.168.1.102
+    backends:
+        - name: example
+          hostname: example.com
+          hosts:
+            - 10.10.1.50
+            - 10.10.1.51
+            - 10.10.1.52
+        - name: subdomains
+          hostname: sub
+          hosts:
+            - 10.10.1.41
+            - 10.10.1.42
+            - 10.10.1.43
+            - 10.10.1.44
+        - name: catchall
+          hosts:
+            - 10.10.1.62
+            - 10.10.1.64

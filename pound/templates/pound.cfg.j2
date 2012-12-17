@@ -35,11 +35,13 @@ End
 
 {% for service in pound.backends %}
 Service "{{service.name}}"
-    HeadRequire "Host:.*{{ service.name }}\..*"
+{% if service.hostname != None %}
+    HeadRequire "Host:.*{{ service.hostname }}\..*"
+{% endif %}
 {% for host in service.hosts %}
     BackEnd
-        Address {{ host.ip }}
-        Port 80
+        Address {{host}}
+        Port {{ports.internal_web}}
     End
 {% endfor %}
     Session
