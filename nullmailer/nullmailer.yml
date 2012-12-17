@@ -1,0 +1,39 @@
+---
+
+- hosts: $target
+  sudo: True
+  gather_facts: True
+  vars:
+    catchall: catchall
+    myrelay: smtp.example.com
+    mytld: example.com
+    is_yum: $ansible_pkg_mgr == 'yum'
+    is_apt: $ansible_pkg_mgr == 'apt'
+    is_fbsd: $ansible_distribution == 'FreeBSD'
+
+  tasks:
+    - name: install rpm
+      action: yum pkg=nullmailer ensure=installed
+      only_if: $is_yum
+
+    - name: install deb
+      action: apt pkg=nullmailer ensure=installed
+      only_if: $is_apt
+
+    - name: install pkg
+      action: command pkg_add -r mail/nullmailer
+      only_if: $is_fbsd
+
+    - name: mailer.conf update for BSD
+      action: copy src=files/mailer.conf dest=/etc/mail/mailer.conf
+      only_if: $is_fbsd
+
+    - name: publish configs
+      action: template src=templates/nullmailer/$item.j2 dest=$nullmailer_conf_dir/$item[:-3]
+      with_fileglob: templates/*.j2
+      notify:
+        - restart nullmailer
+
+  handlers:
+    - name: restart nullmailer
+      service: name-nullmailer state=restarted
