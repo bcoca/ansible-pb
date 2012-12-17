@@ -31,11 +31,11 @@
       only_if: $is_fbsd
 
     - name: publish configs
-      action: template src=templates/nullmailer/$item dest=$pkg_conf_dir/$item[:-3]
+      action: template src=templates/$item dest=$pkg_conf_dir/nullmailer/$item[:-3]
       with_fileglob: templates/*.j2
       notify:
         - restart nullmailer
 
   handlers:
     - name: restart nullmailer
-      service: name-nullmailer state=restarted
+      service: name=nullmailer state=restarted
