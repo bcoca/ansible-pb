@@ -1,0 +1,9 @@
+- hosts: $target
+  gather_facts: false
+  tasks:
+    - name: cleanup config backups
+      action: shell "find /etc -type f -name '*~' -mtime +7|xargs -n 1023 -r rm"
+
+    - name:  cleanup local config backups
+      action: shell "find /usr/local/etc -type f -name '*~' -mtime +7|xargs -n 1023 -r rm"
+
