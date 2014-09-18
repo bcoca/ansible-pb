@@ -1,9 +1,9 @@
-- hosts: $target
+- name: Remove old config backups
+  hosts: all
   gather_facts: false
   tasks:
-    - name: cleanup config backups
-      action: shell "find /etc -type f -name '*~' -mtime +7|xargs -n 1023 -r rm"
-
-    - name:  cleanup local config backups
-      action: shell "find /usr/local/etc -type f -name '*~' -mtime +7|xargs -n 1023 -r rm"
-
+    - name: Go over each config dir and remove backups
+      shell: "find {{item}} -type f -name '*~' -mtime +7|xargs -n 1023 -r rm"
+      with_items:
+        - /etc
+        - /usr/local/etc
