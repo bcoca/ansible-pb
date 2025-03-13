@@ -1,0 +1,6 @@
+- hosts: all
+  sudo: True
+  tasks:
+    - apt_key: url=url=https://get.docker.io/gpg state=present
+    - apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
+    - apt: name=lxc-docker update_cache=yes

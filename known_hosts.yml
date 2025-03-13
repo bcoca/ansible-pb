@@ -1,0 +1,24 @@
+# will show misconfigured host but not stop for them
+- hosts: all
+  sudo: False
+  vars:
+    keyfile: /tmp/known_hosts
+  tasks:
+    - name: Add short name to file
+      local_action: shell ssh-keyscan -p {{ansible_ssh_port|default(22)}} -H {{inventory_hostname}} 2> /dev/null >> {{keyfile}}
+      ignore_errors: True
+
+    - name: Add FQDN to file
+      local_action: shell ssh-keyscan -p {{ansible_ssh_port|default(22)}} -H {{ansible_fqdn}} 2> /dev/null >> {{keyfile}}
+      ignore_errors: True
+
+    - name: Add IPv4 to file
+      local_action: shell ssh-keyscan -p {{ansible_ssh_port|default(22)}} -H {{ansible_default_ipv4.address}} 2> /dev/null >> {{keyfile}}
+      ignore_errors: True
+
+- hosts: all
+  sudo: True
+  tasks:
+    - name: copy into place
+      copy: src={{keyfile}} dest=/etc/ssh/ssh_known_hosts
+
